@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+translation_workspace/
+tasks.json
+extracted/
+*.zip
+resource_pack_temp/
+.DS_Store

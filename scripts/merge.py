@@ -17,6 +17,10 @@ def merge_files(work_dir):
         tasks = json.load(f)
 
     for task in tasks:
+        if task.get("status") != "completed":
+            print(f"Skipping {task['mod_id']} (status: {task.get('status', 'unknown')})")
+            continue
+
         mod_id = task["mod_id"]
         mod_dir = extracted_path / mod_id
         

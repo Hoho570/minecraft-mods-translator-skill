@@ -47,6 +47,8 @@ def create_resource_pack(work_dir, pack_output_path, mc_version, pack_format):
     
     count = 0
     for task in tasks:
+        if task.get("status") != "completed":
+            continue
         mod_id = task["mod_id"]
         mod_dir = extracted_path / mod_id
         final_zh = mod_dir / "final_zh_tw.json"

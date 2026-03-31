@@ -19,7 +19,7 @@ def parse_lang_file(content):
 
 def split_json(data, output_dir, total_keys):
     """Splits JSON data into chunks."""
-    num_parts = math.ceil(total_keys / 1000)
+    num_parts = math.ceil(total_keys / 500)
     chunk_size = math.ceil(total_keys / num_parts)
     
     items = list(data.items())
@@ -44,6 +44,7 @@ def extract_and_classify(mods_dir, output_dir):
     """
     mods_path = Path(mods_dir)
     out_path = Path(output_dir)
+    out_path.mkdir(parents=True, exist_ok=True)
     extracted_path = out_path / "extracted"
     extracted_path.mkdir(parents=True, exist_ok=True)
 
@@ -89,26 +90,14 @@ def extract_and_classify(mods_dir, output_dir):
                     zh_tw_path = None
                     is_zh_lang = False
                     for f in assets:
-                        if f.lower().endswith(f'assets/{mod_id}/lang/zh_tw.json'):
+                        f_lower = f.lower()
+                        if f_lower.endswith(f'assets/{mod_id}/lang/zh_tw.json'):
                             zh_tw_path = f
                             break
-                        elif f.endswith(f'assets/{mod_id}/lang/zh_tw.lang'): # Check zh_TW.lang too? case sensitive in zip?
+                        elif f_lower.endswith(f'assets/{mod_id}/lang/zh_tw.lang'):
                             zh_tw_path = f
                             is_zh_lang = True
                             break
-                        elif f.endswith(f'assets/{mod_id}/lang/zh_tw.lang'): # strictly zh_TW.lang
-                             zh_tw_path = f
-                             is_zh_lang = True
-                             break
-                    
-                    # Correction: search properly for zh_tw variants
-                    if not zh_tw_path:
-                        # Try case insensitive search for zh_TW.lang or zh_tw.lang
-                        for f in assets:
-                             if f.lower().endswith(f'assets/{mod_id}/lang/zh_tw.lang'):
-                                 zh_tw_path = f
-                                 is_zh_lang = True
-                                 break
 
                     if zh_tw_path:
                         try:
@@ -161,10 +150,11 @@ def extract_and_classify(mods_dir, output_dir):
                         "mod_id": mod_id,
                         "original_file": str(json_path),
                         "key_count": line_count,
-                        "split_needed": line_count > 1000
+                        "split_needed": line_count > 500,
+                        "status": "pending"
                     }
 
-                    if line_count > 1000:
+                    if line_count > 500:
                         split_files = split_json(en_data, mod_out_dir, line_count)
                         task_info["files_to_translate"] = split_files
                     else:
